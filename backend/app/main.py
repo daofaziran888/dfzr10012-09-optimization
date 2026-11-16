@@ -10,9 +10,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.routers import ROUTERS
+from app.services import window_dataset
 from app.store import store
 
-app = FastAPI(title="实时流数据处理中心", version="1.0.0")
+app = FastAPI(title="实时流数据处理中心", version="1.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,6 +25,9 @@ app.add_middleware(
 
 for module in ROUTERS:
     app.include_router(module.router)
+
+# 启动时补齐阈值版本与基线窗口触发结果数据集；旧数据库批次保持待迁移状态。
+window_dataset.bootstrap()
 
 
 @app.get("/api/health")
